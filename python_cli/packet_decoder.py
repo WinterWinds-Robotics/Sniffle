@@ -5,7 +5,9 @@
 # Released as open source under GPLv3
 
 import struct
+
 from sniffle_hw import BLE_ADV_AA, PacketMessage
+
 
 def _safe_asciify(c):
     if 32 <= c <= 126:
@@ -46,6 +48,9 @@ class DPacketMessage(PacketMessage):
     def hexdump(self):
         hexstr = " ".join(["%02X" % b for b in self.body])
         ascstr = "  ".join([_safe_asciify(b) for b in self.body])
+
+        if "16 FA FF" in hexstr:
+            hexstr = "    ---- REMOTEID ----\n" + hexstr
         return "\n".join([hexstr, ascstr])
 
     def __str__(self):
