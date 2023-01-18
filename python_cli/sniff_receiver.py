@@ -11,6 +11,10 @@ from packet_decoder import (DPacketMessage, AdvaMessage, AdvDirectIndMessage, Ad
         ConnectIndMessage, DataMessage)
 from binascii import unhexlify
 
+import zenoh
+conf = zenoh.Config()
+session = zenoh.open(conf)
+
 # global variable to access hardware
 hw = None
 
@@ -159,8 +163,12 @@ def print_message(msg, quiet):
 def print_packet(pkt, quiet):
     # Further decode and print the packet
     dpkt = DPacketMessage.decode(pkt)
-    if not (quiet and isinstance(dpkt, DataMessage) and dpkt.data_length == 0):
+    if("REMOTEID" in dpkt.__str__()):
         print(dpkt, end='\n\n')
+        session.put(f"mrfee/sensor/remoteid", dpkt.__str__())
+    #if not (quiet and isinstance(dpkt, DataMessage) and dpkt.data_length == 0):
+    #    print(dpkt, end='\n!!!\n')
+
 
     # Record the packet if PCAP writing is enabled
     if pcwriter:
